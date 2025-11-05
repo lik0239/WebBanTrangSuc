@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-WebtrangsucApplication<webtrangsuc>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "webapp.WebtrangsucApplication",
+            "projectName": "webtrangsuc",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

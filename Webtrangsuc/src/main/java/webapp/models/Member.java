@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
@@ -22,11 +23,14 @@ public class Member {
 
     private String password;
 
-    private boolean enabled;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @OneToOne
+    @JoinColumn(name = "customer_id", unique = true)
+    private Customer customer;
 
     public Long getId() {
         return id;
@@ -60,11 +64,11 @@ public class Member {
         this.role = role;
     }
 
-    public boolean isEnabled() {
-        return enabled;
+    public Customer getCustomer() { 
+        return customer; 
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setCustomer(Customer customer) { 
+        this.customer = customer; 
     }
 }

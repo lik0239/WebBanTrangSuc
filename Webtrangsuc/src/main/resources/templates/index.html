@@ -1,0 +1,117 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="fragments/layout :: layout(~{::section}, ~{::title})">
+<head>
+  <title>AJ Store - Trang chủ</title>
+</head>
+<body>
+<section>
+
+  <!-- SLIDER -->
+  <div class="main_slider" th:style="'background-image:url(' + @{/images/slider_1.png} + ')'">
+    <div class="container fill_height">
+      <div class="row align-items-center fill_height">
+        <div class="col-md-6">
+          <div class="main_slider_content">
+            <h6>AJ Store giảm giá lớn mùa lễ</h6>
+            <h2>Giảm giá lên tới 30%</h2>
+            <div class="red_button shop_now_button"><a href="#">Mua sắm ngay</a></div>
+          </div>
+        </div>
+        <div class="col-md-6 text-right">
+          <img th:src="@{/images/slider_2.png}" alt="Sản phẩm nổi bật" class="img-fluid" style="max-height: 400px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANNER -->
+  <div class="banner">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="banner_item align-items-center" th:style="'background-image:url(' + @{/images/banner_2.png} + ')'">
+            <div class="banner_category"><a href="#">Của nữ</a></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="banner_item align-items-center" th:style="'background-image:url(' + @{/images/banner_3.png} + ')'">
+            <div class="banner_category"><a href="#">Phụ kiện</a></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="banner_item align-items-center" th:style="'background-image:url(' + @{/images/banner_1.png} + ')'">
+            <div class="banner_category"><a href="#">Của nam</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SẢN PHẨM MỚI -->
+  <div class="new_arrivals">
+    <div class="container">
+      <div class="row">
+        <div class="col text-center">
+          <div class="section_title new_arrivals_title">
+            <h2>Sản phẩm mới</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="row align-items-center">
+        <div class="col text-center">
+          <div class="new_arrivals_sorting">
+            <ul class="arrivals_grid_sorting clearfix button-group filters-button-group">
+              <li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center active is-checked" data-filter="*">Tất cả</li>
+              <li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" data-filter=".women">Phụ kiện nữ</li>
+              <li class="grid_sorting_button button d-flex flex-column justify-content-center align-items-center" data-filter=".men">Phụ kiện nam</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRID SẢN PHẨM (ví dụ tĩnh) -->
+      <div class="row g-3 product-grid">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item women">
+          <div class="product product_filter">
+            <div class="product_image"><img th:src="@{/images/product_1.png}" alt="Nhẫn nữ vàng (vàng 610)"></div>
+            <div class="product_info">
+              <h6 class="product_name"><a href="#">Nhẫn nữ vàng (vàng 610)</a></h6>
+              <div class="product_price">1.840.000 VND <span>2.300.000 VND</span></div>
+            </div>
+          </div>
+          <div class="red_button add_to_cart_button"><a href="#">Mua</a></div>
+        </div>
+
+        <!-- Thêm các item khác tương tự -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JS filter -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterButtons = document.querySelectorAll('.grid_sorting_button');
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          filterButtons.forEach(btn => btn.classList.remove('active', 'is-checked'));
+          this.classList.add('active', 'is-checked');
+          const filterValue = this.getAttribute('data-filter');
+          const products = document.querySelectorAll('.product-item');
+          products.forEach(product => {
+            if (filterValue === '*' || product.classList.contains(filterValue.substring(1))) {
+              product.style.display = 'block';
+            } else {
+              product.style.display = 'none';
+            }
+          });
+        });
+      });
+    });
+  </script>
+
+</section>
+</body>
+</html>

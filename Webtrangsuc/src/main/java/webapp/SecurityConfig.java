@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,49 +19,40 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement
-
-
-@EnableJpaRepositories(basePackages = "webapp.models") 
+@EnableJpaRepositories(basePackages = "webapp.models")
 @EntityScan(basePackages = "webapp.models")
 public class SecurityConfig {
-  
+
     @Bean
     public DataSource dataSource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName("com.mysql.cj.jdbc.Driver"); 
-        dataSourceBuilder.url("jdbc:mysql://localhost:3306/webbantrangsuc?useSSL=false&serverTimezone=UTC");
-        dataSourceBuilder.username("root");
-        dataSourceBuilder.password("");
-        return dataSourceBuilder.build();
+        return DataSourceBuilder.create()
+                .driverClassName("com.mysql.cj.jdbc.Driver")
+                .url("jdbc:mysql://localhost:3306/webbantrangsuc?useSSL=false&serverTimezone=UTC")
+                .username("root")
+                .password("")
+                .build();
     }
 
     @Bean
     public JdbcUserDetailsManager userDetailsService(DataSource dataSource) {
-        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
-        String usersQuery = "SELECT username, password, enabled FROM member WHERE username = ?";
-        userDetailsManager.setUsersByUsernameQuery(usersQuery);
+        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
 
-        String authoritiesQuery = "SELECT m.username, r.name FROM member m " +
-                "JOIN user_roles ur ON m.id = ur.user_id " +
-                "JOIN role r ON ur.role_id = r.id WHERE m.username = ?"; 
-        userDetailsManager.setAuthoritiesByUsernameQuery(authoritiesQuery);
-        
-        return userDetailsManager;
+        // ✅ cột enabled bị xóa, thay bằng 1
+        manager.setUsersByUsernameQuery(
+            "SELECT username, password, 1 as enabled FROM member WHERE username = ?"
+        );
+
+        // ✅ không còn bảng user_roles
+        manager.setAuthoritiesByUsernameQuery(
+            "SELECT m.username, r.name as authority FROM member m JOIN role r ON m.role_id = r.id WHERE m.username = ?"
+        );
+
+        return manager;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new PasswordEncoder() {
-            @Override
-            public String encode(CharSequence rawPassword) {
-                return rawPassword.toString();
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword) {
-                return rawPassword.toString().equals(encodedPassword);
-            }
-        };
+        return NoOpPasswordEncoder.getInstance(); // không mã hóa
     }
 
     @Bean
@@ -74,23 +66,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorizeRequests -> 
-                authorizeRequests
-                    .requestMatchers("/login", "/register", "/index", "/coloshop-master/**", "/static/**", "/images/**").permitAll()
-                    .anyRequest().authenticated()
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login", "/register", "/index",
+                                 "/coloshop-master/**", "/static/**", "/images/**", "/css/**", "/js/**")
+                .permitAll()
+                .anyRequest().authenticated()
             )
-            .formLogin(formLogin -> 
-                formLogin
-                    .loginPage("/login")
-                    .defaultSuccessUrl("/index", true)  
-                    .permitAll()
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/index", true)
+                .permitAll()
             )
-            .logout(logout -> 
-                logout.permitAll()
-            )
-            .csrf(csrf -> csrf.disable()); 
-    
+            .logout(logout -> logout.permitAll())
+            .csrf(csrf -> csrf.disable());
         return http.build();
     }
-    
 }

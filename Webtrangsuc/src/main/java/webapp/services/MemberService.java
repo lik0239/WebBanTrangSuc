@@ -16,7 +16,6 @@ public class MemberService {
         Member member = new Member();
         member.setUsername(username);
         member.setPassword(password);
-        member.setEnabled(true);
         memberRepository.save(member);
     }
 }

@@ -1,0 +1,172 @@
+<!-- templates/fragments/layout.html -->
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      th:fragment="layout (content, pageTitle = ~{})">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Title của trang con (nếu không truyền thì mặc định AJ Store) -->
+  <title th:replace="${pageTitle} ?: ~{}">AJ Store</title>
+
+  <!-- CSS (đường dẫn tới /static/...) -->
+  <link rel="stylesheet" th:href="@{/styles/bootstrap4/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/plugins/OwlCarousel2-2.2.1/owl.carousel.css}">
+  <link rel="stylesheet" th:href="@{/plugins/OwlCarousel2-2.2.1/owl.theme.default.css}">
+  <link rel="stylesheet" th:href="@{/plugins/OwlCarousel2-2.2.1/animate.css}">
+  <link rel="stylesheet" th:href="@{/styles/main_styles.css}">
+  <link rel="stylesheet" th:href="@{/styles/responsive.css}">
+  <!-- Font Awesome v5 (khớp class fa fa-...) -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Favicon (nếu đã thêm) -->
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+
+  <style>
+    .logo_container { display:flex; align-items:center; }
+    .logo_container img { width:50px; height:auto; margin-right:10px; }
+    .logo_container h4 { margin:0; font-size:24px; font-weight:bold; }
+  </style>
+</head>
+
+<body>
+  <div class="super_container">
+    <!-- HEADER -->
+    <header class="header trans_300">
+      <div class="top_nav">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6"><div class="top_nav_left"></div></div>
+            <div class="col-md-6 text-right">
+              <div class="top_nav_right">
+                <ul class="top_nav_menu">
+                  <li class="currency">
+                    <a href="#">VND <i class="fa fa-angle-down"></i></a>
+                    <ul class="currency_selection">
+                      <li><a href="#">USD</a></li>
+                      <li><a href="#">EUR</a></li>
+                    </ul>
+                  </li>
+                  <li class="language">
+                    <a href="#">Tiếng Việt <i class="fa fa-angle-down"></i></a>
+                    <ul class="language_selection">
+                      <li><a href="#">English</a></li>
+                      <li><a href="#">Italian</a></li>
+                      <li><a href="#">German</a></li>
+                      <li><a href="#">French</a></li>
+                    </ul>
+                  </li>
+                  <li class="account">
+                    <a href="#">Tài khoản <i class="fa fa-angle-down"></i></a>
+                    <ul class="account_selection">
+                      <li sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/login}"><i class="fa fa-sign-in-alt"></i> Đăng nhập</a>
+                      </li>
+                      <li sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/register}"><i class="fa fa-user-plus"></i> Đăng ký</a>
+                      </li>
+                      <li sec:authorize="isAuthenticated()" class="px-3 py-2">
+                        Xin chào, <strong th:text="${#authentication.name}">user</strong>
+                      </li>
+                      <li sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                          <button class="btn btn-link p-0"><i class="fa fa-sign-out-alt"></i> Đăng xuất</button>
+                        </form>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div> <!-- /.top_nav_right -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main_nav_container">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12 d-flex align-items-center justify-content-between">
+              <div class="logo_container">
+                <img th:src="@{/images/logo.png}" alt="Logo AJ Store">
+                <h4>AJ Store</h4>
+              </div>
+              <nav class="navbar">
+                <ul class="navbar_menu">
+                  <li><a th:href="@{/index}">Trang chủ</a></li>
+                  <li><a th:href="@{/category}">Danh mục</a></li>
+                  <li><a th:href="@{/product}">Sản phẩm</a></li>
+                </ul>
+                <ul class="navbar_user">
+                  <li><a href="#"><i class="fa fa-search" aria-hidden="true"></i></a></li>
+                  <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}"><i class="fa fa-user"></i></a></li>
+                  <li sec:authorize="isAuthenticated()"><a th:href="@{/account}"><i class="fa fa-user"></i></a></li>
+                  <li class="checkout">
+                    <a th:href="@{/cart}">
+                      <img th:src="@{/images/giohang.png}" alt="Giỏ hàng" style="width:30px;height:30px;object-fit:contain;">
+                    </a>
+                  </li>
+                </ul>
+                <div class="hamburger_container">
+                  <i class="fa fa-bars" aria-hidden="true"></i>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- /HEADER -->
+
+    <!-- NỘI DUNG TRANG CON -->
+    <main th:replace="${content}">[content]</main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5>AJ Store</h5>
+            <p>Địa chỉ: Số 123, Đường Lũy Bán Bích, Thành phố Hồ Chí Minh</p>
+            <p>Điện thoại: 0123456789</p>
+            <p>Email: ajstore@gmail.com</p>
+          </div>
+          <div class="col-md-4">
+            <h5>Liên kết nhanh</h5>
+            <ul>
+              <li><a th:href="@{/index}">Trang chủ</a></li>
+              <li><a th:href="@{/product}">Sản phẩm</a></li>
+              <li><a href="#">Giới thiệu</a></li>
+              <li><a href="#">Liên hệ</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Theo dõi chúng tôi</h5>
+            <a href="https://www.facebook.com/profile.php?id=100051162964999" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.facebook.com/Trdaihai1104/" class="social-icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-12 text-center">
+            <p>&copy; 2024 AJ Store. Tất cả các quyền được bảo lưu.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- /FOOTER -->
+  </div> <!-- /.super_container -->
+
+  <!-- JS -->
+  <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+  <script th:src="@{/styles/bootstrap4/popper.js}"></script>
+  <script th:src="@{/styles/bootstrap4/bootstrap.min.js}"></script>
+  <script th:src="@{/plugins/Isotope/isotope.pkgd.min.js}"></script>
+  <script th:src="@{/plugins/OwlCarousel2-2.2.1/owl.carousel.js}"></script>
+  <script th:src="@{/plugins/easing/easing.js}"></script>
+  <script th:src="@{/js/custom.js}"></script>
+</body>
+</html>
